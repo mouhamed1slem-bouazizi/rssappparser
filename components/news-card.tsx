@@ -43,65 +43,90 @@ export function NewsCard({ article, userLanguage, onTranslate }: NewsCardProps) 
   const displaySummary = isTranslated ? translatedSummary : article.summary || article.description
 
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow duration-200">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <CardTitle className="text-lg font-semibold leading-tight line-clamp-2">{displayTitle}</CardTitle>
-          {article.image_url && (
-            <img
-              src={article.image_url || "/placeholder.svg"}
-              alt={article.title}
-              className="w-20 h-20 object-cover rounded-md flex-shrink-0"
-            />
-          )}
-        </div>
+    <Card className="w-full h-full hover:shadow-lg transition-all duration-200 hover:scale-[1.02] flex flex-col">
+      <CardHeader className="pb-3 flex-shrink-0">
+        <div className="space-y-3 sm:space-y-0">
+          <div className="space-y-2">
+            <CardTitle className="text-base sm:text-lg font-semibold leading-tight line-clamp-2 sm:line-clamp-3">
+              {displayTitle}
+            </CardTitle>
+            
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="truncate">
+                {article.pub_date ? new Date(article.pub_date).toLocaleDateString() : "Unknown date"}
+              </span>
+              {article.source && (
+                <>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="truncate text-xs sm:text-sm max-w-[120px] sm:max-w-none">
+                    {article.source}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4" />
-          <span>{article.pub_date ? new Date(article.pub_date).toLocaleDateString() : "Unknown date"}</span>
-          {article.source && (
-            <>
-              <span>•</span>
-              <span>{article.source}</span>
-            </>
+          {article.image_url && (
+            <div className="flex justify-center sm:justify-start">
+              <img
+                src={article.image_url || "/placeholder.svg"}
+                alt={article.title}
+                className="w-full max-w-[200px] sm:w-20 sm:h-20 h-32 sm:h-20 object-cover rounded-md"
+                loading="lazy"
+              />
+            </div>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        <div className="space-y-3">
+      <CardContent className="pt-0 flex-1 flex flex-col">
+        <div className="space-y-3 flex-1">
           {article.category && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge 
+              variant="secondary" 
+              className="text-xs w-fit"
+            >
               {article.category}
             </Badge>
           )}
 
-          {displaySummary && <p className="text-sm text-muted-foreground line-clamp-3">{displaySummary}</p>}
+          {displaySummary && (
+            <p className="text-sm text-muted-foreground line-clamp-3 sm:line-clamp-4 leading-relaxed flex-1">
+              {displaySummary}
+            </p>
+          )}
+        </div>
 
-          <div className="flex items-center gap-2 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-4 mt-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.open(article.link, "_blank")}
+            className="flex items-center justify-center gap-2 w-full sm:w-auto sm:flex-1"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span className="text-xs sm:text-sm">Read Full Article</span>
+          </Button>
+
+          {userLanguage !== "en" && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.open(article.link, "_blank")}
-              className="flex items-center gap-2"
+              onClick={handleTranslate}
+              disabled={isTranslating || isTranslated}
+              className="flex items-center justify-center gap-2 w-full sm:w-auto"
             >
-              <ExternalLink className="w-4 h-4" />
-              Read Full Article
-            </Button>
-
-            {userLanguage !== "en" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleTranslate}
-                disabled={isTranslating || isTranslated}
-                className="flex items-center gap-2"
-              >
-                {isTranslating ? <Sparkles className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
+              {isTranslating ? (
+                <Sparkles className="w-4 h-4 animate-spin" />
+              ) : (
+                <Globe className="w-4 h-4" />
+              )}
+              <span className="text-xs sm:text-sm">
                 {isTranslated ? "Translated" : "Translate"}
-              </Button>
-            )}
-          </div>
+              </span>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

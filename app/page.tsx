@@ -188,22 +188,22 @@ export default function NewsApp() {
         isLoading={isLoading}
       />
 
-      <div className="container mx-auto px-4 py-6">
-        <div className="space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="space-y-4 sm:space-y-6">
           {isRSSMode && (
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 sm:p-6">
               <div className="flex items-start gap-3">
-                <Wifi className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+                <Wifi className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mt-1 flex-shrink-0" />
                 <div className="space-y-2">
-                  <h3 className="text-green-900 font-semibold text-lg">🌐 Live RSS Mode - Real News Feeds</h3>
-                  <p className="text-green-800">
+                  <h3 className="text-green-900 font-semibold text-base sm:text-lg">🌐 Live RSS Mode - Real News Feeds</h3>
+                  <p className="text-green-800 text-sm sm:text-base leading-relaxed">
                     Connected to real RSS feeds with proxy support to bypass CORS restrictions. All articles are fetched
                     live from actual news sources.
                   </p>
                   <div className="flex flex-wrap gap-2 mt-3">
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">📡 RSS + Proxy</span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">🤖 AI Summarization</span>
-                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs sm:text-sm">📡 RSS + Proxy</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs sm:text-sm">🤖 AI Summarization</span>
+                    <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs sm:text-sm">
                       🌍 Multi-language Translation
                     </span>
                   </div>
@@ -230,7 +230,7 @@ export default function NewsApp() {
 
           {error && (
             <div
-              className={`border rounded-lg p-4 ${
+              className={`border rounded-lg p-3 sm:p-4 ${
                 error.includes("✅")
                   ? "bg-green-50 border-green-200"
                   : error.includes("📱") || error.includes("⚠️")
@@ -240,13 +240,13 @@ export default function NewsApp() {
             >
               <div className="flex items-start gap-2">
                 {error.includes("❌") ? (
-                  <WifiOff className="w-5 h-5 text-red-600 mt-0.5" />
+                  <WifiOff className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 mt-0.5 flex-shrink-0" />
                 ) : error.includes("⚠️") || error.includes("📱") ? (
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5" />
+                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                 ) : (
-                  <Wifi className="w-5 h-5 text-green-600 mt-0.5" />
+                  <Wifi className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 )}
-                <div>
+                <div className="min-w-0 flex-1">
                   <p
                     className={`text-sm ${
                       error.includes("✅")
@@ -263,10 +263,10 @@ export default function NewsApp() {
                       variant="outline"
                       size="sm"
                       onClick={handleRefresh}
-                      className="mt-2 flex items-center gap-2"
+                      className="mt-2 flex items-center gap-2 w-full sm:w-auto"
                     >
                       <RefreshCw className="w-4 h-4" />
-                      Retry RSS Feeds
+                      <span className="text-xs sm:text-sm">Retry RSS Feeds</span>
                     </Button>
                   )}
                 </div>
@@ -275,12 +275,12 @@ export default function NewsApp() {
           )}
 
           {isLoading && articles.length === 0 ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="flex items-center gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex items-center justify-center py-8 sm:py-12">
+              <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+                <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-blue-600" />
                 <div>
-                  <p className="font-medium">Loading RSS feeds...</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium text-sm sm:text-base">Loading RSS feeds...</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {selectedCategory !== "All"
                       ? `Fetching ${selectedCategory} from Google News`
                       : "Fetching from all RSS categories"}
@@ -291,13 +291,17 @@ export default function NewsApp() {
           ) : (
             <>
               {filteredArticles.length > 0 && (
-                <div className="text-sm text-muted-foreground mb-4 flex items-center gap-2">
-                  <Wifi className="w-4 h-4 text-green-600" />
-                  Showing {filteredArticles.length} articles from RSS feeds
-                  {selectedCategory !== "All" && ` in ${selectedCategory}`}
+                <div className="text-xs sm:text-sm text-muted-foreground mb-4 flex items-center gap-2 px-1">
+                  <Wifi className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 flex-shrink-0" />
+                  <span>
+                    Showing {filteredArticles.length} articles from RSS feeds
+                    {selectedCategory !== "All" && ` in ${selectedCategory}`}
+                  </span>
                 </div>
               )}
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              
+              {/* Responsive Grid */}
+              <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {filteredArticles.map((article) => (
                   <NewsCard
                     key={article.id}
@@ -311,20 +315,25 @@ export default function NewsApp() {
           )}
 
           {!isLoading && filteredArticles.length === 0 && !error && (
-            <div className="text-center py-12">
+            <div className="text-center py-8 sm:py-12">
               <div className="space-y-4">
-                <WifiOff className="w-16 h-16 text-gray-400 mx-auto" />
-                <div>
-                  <p className="text-lg font-medium text-muted-foreground">No RSS articles available</p>
-                  <p className="text-sm text-muted-foreground">
+                <WifiOff className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto" />
+                <div className="space-y-2">
+                  <p className="text-base sm:text-lg font-medium text-muted-foreground">No RSS articles available</p>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
                     {selectedCategory !== "All"
                       ? `No ${selectedCategory} articles found in RSS feeds`
                       : "RSS feeds may be temporarily unavailable"}
                   </p>
                 </div>
-                <Button variant="outline" onClick={handleRefresh} className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={handleRefresh} 
+                  className="flex items-center gap-2 mx-auto"
+                  size="sm"
+                >
                   <RefreshCw className="w-4 h-4" />
-                  Try Loading RSS Feeds
+                  <span className="text-sm">Try Loading RSS Feeds</span>
                 </Button>
               </div>
             </div>
