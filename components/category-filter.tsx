@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 
 const CATEGORIES = [
   "All",
@@ -24,17 +24,44 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  const checkScrollPosition = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+      setCanScrollLeft(scrollLeft > 0)
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1)
+    }
+  }
+
+  useEffect(() => {
+    checkScrollPosition()
+    const container = scrollContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition)
+      // Check initial state after a short delay to ensure content is rendered
+      setTimeout(checkScrollPosition, 100)
+      return () => container.removeEventListener('scroll', checkScrollPosition)
+    }
+  }, [])
 
   const scrollLeft = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: -200, behavior: 'smooth' })
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -200,
+        behavior: 'smooth'
+      })
     }
   }
 
   const scrollRight = () => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' })
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 200,
+        behavior: 'smooth'
+      })
     }
   }
 
@@ -42,20 +69,29 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
     <div className="w-full">
       {/* Mobile/Tablet: Horizontal scroll with navigation arrows */}
       <div className="relative lg:hidden">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={scrollLeft}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </Button>
+        {/* Left Arrow */}
+        {canScrollLeft && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={scrollLeft}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm border shadow-md hover:bg-background"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+        )}
         
-        <ScrollArea className="w-full">
+        {/* Scrollable Categories */}
+        <div className="overflow-hidden">
           <div 
-            ref={scrollRef}
-            className="flex gap-2 px-10 py-1 overflow-x-auto scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            ref={scrollContainerRef}
+            className="flex gap-2 px-1 py-2 overflow-x-auto scrollbar-hide"
+            style={{ 
+              scrollbarWidth: 'none', 
+              msOverflowStyle: 'none',
+              paddingLeft: canScrollLeft ? '40px' : '8px',
+              paddingRight: canScrollRight ? '40px' : '8px'
+            }}
           >
             {CATEGORIES.map((category) => (
               <Button
@@ -63,22 +99,25 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                 variant={selectedCategory === category ? "default" : "outline"}
                 size="sm"
                 onClick={() => onCategoryChange(category)}
-                className="whitespace-nowrap min-w-fit px-3 py-2 text-sm font-medium transition-all duration-200 hover:scale-105"
+                className="whitespace-nowrap min-w-fit px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 flex-shrink-0"
               >
                 {category}
               </Button>
             ))}
           </div>
-        </ScrollArea>
+        </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={scrollRight}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 h-9 w-9 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Button>
+        {/* Right Arrow */}
+        {canScrollRight && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={scrollRight}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm border shadow-md hover:bg-background"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       {/* Desktop: Wrap layout */}
